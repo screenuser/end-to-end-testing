@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en-US" prefix="og: http://ogp.me/ns#" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="http://gmpg.org/xfn/11">
+		<link rel="pingback" href="./xmlrpc.php">
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,400italic' rel='stylesheet' type='text/css'>
+	<script>(function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);</script>
+<title>End-to-end testing: definition &amp; automation best practices</title>
+
+<!-- This site is optimized with the Yoast SEO plugin v7.5.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<meta name="description" content="Very few companies can afford to automate end-to-end testing because its scope is just too vast for handwritten tests. Theoretically, end-to-end testing should cover everything that a user can do with an application. So how do you automate robust e2e tests that can handle this scope?"/>
+<link rel="canonical" href="index.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="End-to-end testing: definition &amp; automation best practices" />
+<meta property="og:description" content="Very few companies can afford to automate end-to-end testing because its scope is just too vast for handwritten tests. Theoretically, end-to-end testing should cover everything that a user can do with an application. So how do you automate robust e2e tests that can handle this scope?" />
+<meta property="og:url" content="./end-to-end-testing/" />
+<meta property="og:site_name" content="Screenster" />
+<meta property="article:publisher" content="https://www.facebook.com/screenster.io" />
+<meta property="article:section" content="testing automation" />
+<meta property="article:published_time" content="2017-10-03T08:58:41+00:00" />
+<meta property="article:modified_time" content="2018-06-08T12:28:06+00:00" />
+<meta property="og:updated_time" content="2018-06-08T12:28:06+00:00" />
+<meta property="og:image" content="./wp-content/uploads/2017/01/end-to-end-testing.jpg" />
+<meta property="og:image:secure_url" content="./wp-content/uploads/2017/01/end-to-end-testing.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="301" />
+<meta property="og:image:alt" content="End-to-end testing" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:description" content="Very few companies can afford to automate end-to-end testing because its scope is just too vast for handwritten tests. Theoretically, end-to-end testing should cover everything that a user can do with an application. So how do you automate robust e2e tests that can handle this scope?" />
+<meta name="twitter:title" content="End-to-end testing: definition &amp; automation best practices" />
+<meta name="twitter:site" content="@screenster_io" />
+<meta name="twitter:image" content="./wp-content/uploads/2017/01/end-to-end-testing.jpg" />
+<meta name="twitter:creator" content="@screenster_io" />
+<!-- / Yoast SEO plugin. -->
+
+<link rel="amphtml" href="amp/index.html" /><link rel='dns-prefetch' href='https://js.hs-scripts.com/' />
+<link rel='dns-prefetch' href='https://s.w.org/' />
+<link rel="alternate" type="application/rss+xml" title="Screenster &raquo; Feed" href="./feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Screenster &raquo; Comments Feed" href="./comments/feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Screenster &raquo; What is end-to-end testing? Comments Feed" href="feed/index.html" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.4\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.4\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/screenster.io\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.6"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55357,56692,8205,9792,65039],[55357,56692,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='contact-form-7-css'  href='./wp-content/plugins/contact-form-7/includes/css/styles.css%3Fver=5.0.2.css' type='text/css' media='all' />
+<link rel='stylesheet' id='ez-icomoon-css'  href='./wp-content/plugins/easy-table-of-contents/vendor/icomoon/style.min.css%3Fver=1.7.css' type='text/css' media='all' />
+<link rel='stylesheet' id='ez-toc-css'  href='./wp-content/plugins/easy-table-of-contents/assets/css/screen.min.css%3Fver=1.7.css' type='text/css' media='all' />
+<style id='ez-toc-inline-css' type='text/css'>
+div#ez-toc-container p.ez-toc-title {font-size: 120%;}div#ez-toc-container p.ez-toc-title {font-weight: 500;}div#ez-toc-container ul li {font-size: 95%;}
+</style>
+<link rel='stylesheet' id='genericons-css'  href='./wp-content/themes/twentysixteen/genericons/genericons.css%3Fver=3.4.1.css' type='text/css' media='all' />
+<link rel='stylesheet' id='twentysixteen-style-css'  href='./wp-content/themes/twentysixteen/style.css%3Fver=5.1.7.css' type='text/css' media='all' />
+<link rel='stylesheet' id='wpgform-css-css'  href='./wp-content/plugins/wpgform/css/wpgform.css%3Fver=4.9.6.css' type='text/css' media='all' />
+<link rel='stylesheet' id='addtoany-css'  href='./wp-content/plugins/add-to-any/addtoany.min.css%3Fver=1.14.css' type='text/css' media='all' />
+<style id='addtoany-inline-css' type='text/css'>
+div.addtoany_share_save_container {
+opacity: 0.8;
+}
+</style>
+<script type='text/javascript' src='./wp-includes/js/jquery/jquery.js%3Fver=1.12.4'></script>
+<script type='text/javascript' src='./wp-includes/js/jquery/jquery-migrate.min.js%3Fver=1.4.1'></script>
+<script type='text/javascript' src='./wp-content/plugins/add-to-any/addtoany.min.js%3Fver=1.0'></script>
+<script type='text/javascript' src='./wp-content/plugins/wonderplugin-lightbox/engine/wonderpluginlightbox.js%3Fver=4.0'></script>
+<!--[if lt IE 9]>
+<script type='text/javascript' src='./wp-content/themes/twentysixteen/js/html5.js?ver=3.7.3'></script>
+<![endif]-->
+<link rel='https://api.w.org/' href='./wp-json/index.html' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="./xmlrpc.php%3Frsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="./wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 4.9.6" />
+<link rel="alternate" type="application/json+oembed" href="./wp-json/oembed/1.0/embed%3Furl=https:%252F%252Fscreenster.io%252Fend-to-end-testing%252F" />
+<link rel="alternate" type="text/xml+oembed" href="./wp-json/oembed/1.0/embed%3Furl=https:%252F%252Fscreenster.io%252Fend-to-end-testing%252F&amp;format=xml" />
+
+<script data-cfasync="false">
+window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};
+(function(d,s,a,b){a=d.createElement(s);b=d.getElementsByTagName(s)[0];a.async=1;a.src="https://static.addtoany.com/menu/page.js";b.parentNode.insertBefore(a,b);})(document,"script");
+</script>
+<style>
+	table {
+		border-collapse: collapse;
+	}
+
+	td, th{
+		border: 1px solid black; 
+		padding:5px;
+	}
+</style>
+<link rel="icon" href="./wp-content/uploads/2016/03/cropped-favicon-32x32.png" sizes="32x32" />
+<link rel="icon" href="./wp-content/uploads/2016/03/cropped-favicon-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon-precomposed" href="./wp-content/uploads/2016/03/cropped-favicon-180x180.png" />
+<meta name="msapplication-TileImage" content="./wp-content/uploads/2016/03/cropped-favicon-270x270.png" />
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MN2F9R8');</script>
+<!-- End Google Tag Manager -->
+</head>
+
+<body class="post-template-default single single-post postid-1387 single-format-standard group-blog">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MN2F9R8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div id="wrapper">
+	<header id="header">
+		<div class="container clearfix">
+		<a class="logo" href="./index.html">screenster</a>		
+			<div class="nav-container">
+				<span class="mobile-opener"><i></i></span>
+				<ul id="nav" class="menu"><li id="menu-item-12" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-12"><a href="./index.html">Home</a></li>
+<li id="menu-item-313" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-313"><a href="./documentation/demo-automation-of-gmail-with-screenster/index.html">Documentation</a></li>
+<li id="menu-item-45" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-45"><a href="./pricing/index.html">Pricing</a></li>
+<li id="menu-item-44" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-44"><a href="./support/index.html">Support</a></li>
+<li id="menu-item-43" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-43"><a href="./blog/index.html">Blog</a></li>
+<li id="menu-item-1812" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1812"><a href="https://tests.screenster.io/authenticate/signin?remember=true">Login</a></li>
+<li id="menu-item-13" class="sign-link menu-item menu-item-type-custom menu-item-object-custom menu-item-13"><a href="https://tests.screenster.io/authenticate/signup">Sign up</a></li>
+</ul>			</div>
+		</div>
+
+	</header>
+
+<div id="main">	<div class="container">		<div class="blog-wrap">			
+
+
+	<aside id="secondary" class="sidebar" role="complementary">
+		<section id="enhancedtextwidget-2" class="widget widget_text enhanced-text-widget"><div class="textwidget widget-text"><section id="recent-posts-2" class="widget widget_recent_entries">
+    <h2>Related Posts</h2>
+    <ul>
+        <li>
+            <a href="./image-comparison-tool/index.html">Image and screenshot comparison tools for UI testing</a>
+            <span class="post-date">June 20, 2017</span>
+        </li>
+        <li>
+            <a href="./selenium-alternatives-for-testing-automation/index.html">Selenium alternatives for testing automation</a>
+            <span class="post-date">March 13, 2016</span>
+        </li>
+        <li>
+            <a href="./selenium-ide-chrome/index.html">How to run tests from Selenium IDE in Chrome</a>
+            <span class="post-date">March 2, 2017</span>
+        </li>
+<li>
+            <a href="./selenium-ide-alternatives-for-ui-regression-testing/index.html">Selenium IDE alternatives for UI regression testing</a>
+            <span class="post-date">February 3, 2017</span>
+        </li>
+<li>
+            <a href="./regression-testing/index.html">What is Regression Testing? Techniques and best practices
+</a>
+            <span class="post-date">May 3, 2017</span>
+        </li>
+    </ul>
+</section></div></section><div class="sticky-sidebar" style="text-align: center;"></br><span class="sidebar-cta">End-to-end testing on the cloud</span><a id="btn-try-online-sidebar" class="btn" href="https://tests.screenster.io/authenticate/signup?tryNow=true" target="_blank">Try Online</a></br></br></br></div>
+	</aside><!-- .sidebar .widget-area -->
+	<!--Sidebar sticky functionality-->
+	<script>
+jQuery( document ).ready(function() {
+  
+
+  var $sticky = jQuery('.sticky-sidebar');
+  var $stickyrStopper = jQuery('.sticky-stopper');
+  if (!!$sticky.offset()) { // make sure ".sticky" element exists
+
+    var generalSidebarHeight = $sticky.innerHeight();
+    var stickyTop = $sticky.offset().top;
+    var stickOffset = 100;
+    
+    
+    jQuery(window).scroll(function(){ // scroll event
+      var windowTop = jQuery(window).scrollTop(); // returns number
+var stickyStopperPosition = $stickyrStopper.offset().top;
+var stopPoint = stickyStopperPosition - generalSidebarHeight - stickOffset-78;
+var diff = stopPoint + stickOffset;
+      if (stopPoint < windowTop) {
+          $sticky.css({ position: 'absolute', top: diff });
+      } else if (stickyTop < windowTop+stickOffset) {
+          $sticky.css({ position: 'fixed', top: stickOffset });
+      } else {
+          $sticky.css({position: 'absolute', top: 'initial'});
+      }
+    });
+
+  }
+});
+</script>
+
+
+
+
+			<div class="blog-content">		
+<article id="post-1387" class="post-1387 post type-post status-publish format-standard has-post-thumbnail hentry category-testing-automation">
+	<h1>What is end-to-end testing?</h1>	<span class="post-date">October 3, 2017</span>
+
+    
+	
+	<div class="post-thumbnail">
+		<img width="1200" height="301" src="./wp-content/uploads/2017/01/end-to-end-testing-1200x301.jpg" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="End-to-end testing" srcset="./wp-content/uploads/2017/01/end-to-end-testing.jpg 1200w, ./wp-content/uploads/2017/01/end-to-end-testing-300x75.jpg 300w, ./wp-content/uploads/2017/01/end-to-end-testing-768x193.jpg 768w, ./wp-content/uploads/2017/01/end-to-end-testing-1024x257.jpg 1024w" sizes="(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 984px) 60vw, (max-width: 1362px) 62vw, 840px" />	</div><!-- .post-thumbnail -->
+
+	
+	<div class="content">
+		<span class="entry-content"><h2 id="what-is">What is end-to-end testing?</h2>
+<p><strong>End-to-end testing (e2e testing)</strong> is a software quality assurance methodology that targets “<a href="http://toolsqa.com/software-testing/what-does-end-to-end-test-mean/">the flow of an application</a>” functionality- and performance-wise. This methodology checks if an application performs as designed <i>on all levels and across all subsystems</i>. The scope of end-to-end testing encompasses the application in its entirety, as well as its integration with external interfaces and outside applications.</p>
+<p><span id="more-1387"></span></p>
+<p>Okay, but doesn’t this ring a bell? Whenever someone talks about testing software in its entirety, doesn’t it make you think of <i>system testing</i>? As a matter of fact, novice testers tend to confuse end-to-end testing and system testing due to their seemingly similar scopes. This said, the two couldn’t be more different.</p>
+<h2 id="vs-system-testing">End-to-end testing versus system testing</h2>
+<p>Comparing end-to-end testing and system testing, the latter actually has a narrower focus. For this reason, it makes more sense to look at what system testing covers and proceed to what’s added in end-to-end testing.</p>
+<table>
+<tbody>
+<tr>
+<td><strong>System Testing</strong></td>
+<td><strong>End-to-End Testing</strong></td>
+</tr>
+<tr>
+<td>Validates the software system but doesn’t look outside of it.</td>
+<td>Validates both the software system, all interconnected systems, and external interfaces.</td>
+</tr>
+<tr>
+<td>Looks at system features (viewing each feature as a subsystem).</td>
+<td>Looks at backend and hardware to cover all functionality that the user experiences when using an application</td>
+</tr>
+<tr>
+<td>Follows integration testing.</td>
+<td>Follows system testing.</td>
+</tr>
+<tr>
+<td>Is easier to automate (though manual system testing is still a widespread practice).</td>
+<td>Manual end-to-end testing is more common due to the need of dealing with external interfaces.</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;<br />
+Basically, system testing precedes end-to-end testing. It checks whether the functionality of the system meets the requirements, and it looks at how separate features interoperate as parts of a product. </p>
+<p>With end-to-end testing, you step this up by testing the complete functionality of the product. You use real-world UX scenarios that involve interaction with databases, hardware, and networks. Doing this enables you to explore system dependencies of various origin and ensure correct operation and error-free data flow across subsystems and applications layers.</p>
+<p>Okay, I guess all of this is beginning to sound too high-level at this point. So what exactly does an end-to-end test do? Looking at an example seems like the best way to explain&#8230;</p>
+<h2 id="test-example">End-to-end test example: signing in to Google</h2>
+<p>A complete end-to-end testing suite encompasses everything that a user can do with your application. A single test, in its turn, verifies a single functionality as perceived by the user. </p>
+<p>Signing in to your Google account seems like a good example of an end-to-end test. </p>
+<p>In the test below, the user will navigate through two pages and complete four interactions with the UI.</p>
+<p><strong>Page #1: Input valid email, click Next.</strong><br />
+<img src="./wp-content/uploads/2017/01/end-to-end-testing-google.png" alt="end to end testing for signing in to Google (screenshot of page 1)"></p>
+<p><strong>Page #2: Input valid password, click Next.</strong><br />
+<img src="./wp-content/uploads/2017/01/end-to-end-testing-google-1.png" alt="end to end testing for signing in to Google (screenshot of page 2)"></p>
+<p>When testing these four steps, and end-to-end test will look at whether nothing prevents a user from successfully completing the interaction with the web app. This includes a whole bunch of things.</p>
+<p>The forms and buttons need to actually appear on the page, and send the correct data to the server. The web application needs to process user actions and server responses correctly while maintaining the integrity of the UI. Finally, the sign-in menus should be accessible via the right URL, and completing the steps should redirect the user to another correct URL.</p>
+<h2 id="how-to-do">How to do end-to-end testing?</h2>
+<p>The columns in this table should serve as a starting point for QA teams planning out and performing end-to-end testing. Each case in end-to-end testing covers a single functionality, which is why tests reflect separate user-facing functions.</p>
+<table>
+<tbody>
+<tr>
+<td><strong>1. Building user functions →</strong></td>
+<td><strong>2. Building conditions →</strong></td>
+<td><strong>3. Test cases development</strong></td>
+</tr>
+<tr>
+<td>Listing features of all systems and subsystems</td>
+<td>Listing conditions for each user function</td>
+<td>Building test cases for each condition</td>
+</tr>
+<tr>
+<td>Analysis of actions, input and output data</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Analysis of nature and relations between user functions</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;<br />
+Seems clear and simple so far, right? It gets more challenging if we start talking about the automation of end-to-end testing.</p>
+<h2 id="automation">End-to-end-testing automation</h2>
+<p>So what is it that makes QA teams struggle with automated end-to-end testing? Why in 2018, so many companies still rely on manual testing to get the job done?</p>
+<p>Knowing about end-to-end testing best practices is great, but have you actually seen anyone follow them? There’s a huge difference between how teams of QAs <i>should do</i> end-to-end testing on paper and how they <i>actually do it </i>in real life. Let’s explore the challenges of end-to-end testing automation and the strategies companies use to overcome these challenges.</p>
+<h2 id="real-life">End-to-end testing on paper and in real life</h2>
+<p>On paper, product managers, requirements managers, and testers will compile detailed lists of conditions for every user function. On paper, QA automation teams will invest weeks into writing multiple tests for each feature of each system. In real life, no one has time for this.</p>
+<p>Real-life end-to-end testing mostly boils down to manual testers reproducing *some* user stories. Sure, there are TDD and unit tests to rule out potentially critical issues at lower levels, which actually makes this “selective end-to-end testing” acceptable. But not everything gets caught! Depending on how solid your engineering and manual QAs are, the end users will see a few or a painful number of bugs. And the cycle repeats itself with each new release.</p>
+<p>In the best case scenario, testers will also reuse suites of hand-coded functional and UI tests to automate happy paths at the system level. These are no substitute for automated end-to-end testing at full scale, but hey, that’s pretty much all you get with handwritten tests.</p>
+<h2 id="gmail">End-to-end testing example: Gmail</h2>
+<p>Manual or automated, end-to-end testing mostly reproduces how a user interacts with an application. A (somewhat simplified) case of an end-to-end test for Gmail will include following steps:</p>
+<ul>
+<li>Launching a browser instance.</li>
+<li>Using the browser address bar to type in the URL of the Gmail login page; waiting for the login page to load and open.</li>
+<li>Logging into Gmail account by typing the user credentials into the forms available on the page.</li>
+<li>Accessing the inbox and verifying that content and presentation are correct.</li>
+<li>Opening Read and Unread emails and verifying that content and presentation are correct.</li>
+<li>Logging out of Gmail.</li>
+</ul>
+<p>Naturally, you can automate these steps with Selenium or other frameworks by focusing on separate elements in every UI state. You’d normally have similar test cases for other simple actions like reading, sending and receiving emails, reporting spam, etc. But doesn’t this look a bit like system testing?</p>
+<h2 id="codeless">Automated end-to-end testing, codeless style</h2>
+<p>Automation engineers are often sceptical about record-playback IDEs, which is partly justified. Old-school record-playback platforms of the 2000s were too cumbersome, and offered too little in the way of functionality. True, tools like Sahi or Ranorex spared you from having to handwrite tests. On the flip side, editing auto-generated code they produce is more painful than writing quality code from scratch.</p>
+<p>Luckily, modern-day solutions don’t make you fumble through auto-generated code whenever you’re editing a test. The cloud-based automation platforms don’t depend on testers’ programming skills. Let’s see what our own product <strong>Screenster</strong> has to offer in the way of automated end-to-end testing.</p>
+<h2 id="real-life">Codeless end-to-end tests that work for real projects</h2>
+<p>Being a codeless solution, Screenster gives you the full power of WebDriver while abstracting away its complexity. Both test creation and test editing are carried out via a neat user-friendly dashboard, and the tool has a virtually non-existent learning curve.</p>
+<p>Eliminating the need to hand-code your tests increases the productivity of automated end-to-end testing. With Screenster, a manual tester can automate an end-to-end test in under 3 minutes. Editing a test is just as fast and simple. Here’s how it works for a Gmail test similar to the one we’ve mentioned earlier:</p>
+<p><iframe src="https://www.youtube.com/embed/W_TsN2MvsJ8" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<h2 id="baselines">Smart baselines with image, CSS, and content comparison</h2>
+<p>When recording a test, Screenster verifies every on-page element. It generates separate baselines for UI elements and content, and it captures the DOM structure of every UI component. When comparing visuals, the tool filters out visual noise with anti-aliasing, and captures the most minute layout shifts and visual bugs.</p>
+<h2 id="self-healing">Self-healing tests with Smart locators</h2>
+<p>When analyzing the DOM structure of a UI, Screenster stores multiple locators for every element. In case of a change in the DOM structure or CSS breaks a locator, the platform automatically substitutes it with another one. By automatically restoring locators in this manner, the tool effectively reduces the time you need to spend on test maintenance.</p>
+<h2 id="timeouts">Automatic timeouts for asynchronous events and server interaction</h2>
+<p>Communication with a server is integral to end-to-end testing, which makes text execution delays necessary. Instead of making you handcraft explicit and implicit waits, Screenster determines optimal wait time for every element. Again, this reduces the maintenance footprint of your test suites.</p>
+<h2 id="collaboration">Simple collaboration</h2>
+<p>Like any other automation tool that belongs in 2017, Screenster is cloud-based. There’s a shared browser-based environment for the collaborative management of end-to-end testing suites, as well as a cloud server. This setup eliminates the need to instal and tinker with separate modules. Besides, you can opt for running your tests on a server installed on premise if this setup suits the nature of your project better.</p>
+<h2 id="ci">CI support</h2>
+<p>Running tests in a continuous integration environment has become the default way of doing automated end-to-end testing. With the support for Jenkins, TeamCity, Travis, and Bamboo, Screenster meets the requirements of modern-day testing. CI support is implemented via a proprietary plugin that you can download from our website.</p>
+<h2 id="bottom-line">Bottom line: automated end-to-end testing done right</h2>
+<p>The scope of end-to-end testing poses a major challenge for test automation engineers,</p>
+<p>Which is why having the right tool is so important. Screenster streamlines the automation of end-to-end testing to a point where it becomes cost-effective and simple enough for any company.</p>
+<p>One way to see if Screenster can live up to this claim is to try our demo. Try to automate a simple test for your website and you’ll see that hand-coded tests are a thing of the past.<br />
+
+<div class="sticky-stopper"></div>
+<br />
+
+<div class="bottom-cta" style="text-align: center;">
+<h2>End-to-end testing on the cloud</h2>
+<a id="btn-try-online" class="btn" href="https://tests.screenster.io/authenticate/signup?tryNow=true" target="_blank" rel="noopener">Try Online</a>
+
+</div>
+</p>
+</span><div class="hatom-extra"><span class="entry-title">What is end-to-end testing?</span> was last modified: <span class="updated"> June 8th, 2018</span> by <span class="author vcard"><span class="fn">Ilya Goncharov</span></span></div><div class="addtoany_share_save_container addtoany_content addtoany_content_bottom"><div class="a2a_kit a2a_kit_size_32 addtoany_list" data-a2a-url="./end-to-end-testing/" data-a2a-title="What is end-to-end testing?"><a class="a2a_button_facebook" href="https://www.addtoany.com/add_to/facebook?linkurl=https%3A%2F%2Fscreenster.io%2Fend-to-end-testing%2F&amp;linkname=What%20is%20end-to-end%20testing%3F" title="Facebook" rel="nofollow noopener" target="_blank"></a><a class="a2a_button_twitter" href="https://www.addtoany.com/add_to/twitter?linkurl=https%3A%2F%2Fscreenster.io%2Fend-to-end-testing%2F&amp;linkname=What%20is%20end-to-end%20testing%3F" title="Twitter" rel="nofollow noopener" target="_blank"></a><a class="a2a_button_linkedin" href="https://www.addtoany.com/add_to/linkedin?linkurl=https%3A%2F%2Fscreenster.io%2Fend-to-end-testing%2F&amp;linkname=What%20is%20end-to-end%20testing%3F" title="LinkedIn" rel="nofollow noopener" target="_blank"></a><a class="a2a_button_google_plus" href="https://www.addtoany.com/add_to/google_plus?linkurl=https%3A%2F%2Fscreenster.io%2Fend-to-end-testing%2F&amp;linkname=What%20is%20end-to-end%20testing%3F" title="Google+" rel="nofollow noopener" target="_blank"></a><a class="a2a_button_email" href="https://www.addtoany.com/add_to/email?linkurl=https%3A%2F%2Fscreenster.io%2Fend-to-end-testing%2F&amp;linkname=What%20is%20end-to-end%20testing%3F" title="Email" rel="nofollow noopener" target="_blank"></a></div></div>	</div><!-- .content -->
+	
+	<div id="single_post_pagination">
+		<a href="./on-content-verification-and-why-its-important-for-ui-testing-new-feature/index.html" rel="prev">&laquo; On content verification and why it’s important for UI testing (new feature)</a> <a href="./screenster-tests-got-faster-with-minimal-verification/index.html" rel="next">Screenster tests got faster with Minimal Verification; &raquo</a>	</div>
+	
+	<footer class="footer">
+			</footer><!-- footer -->
+
+</article><!-- #post-## -->
+
+<div id="comments" class="comments-area">
+
+			<h2 class="comments-title">
+			14 thoughts on &ldquo;What is end-to-end testing?&rdquo;		</h2>
+
+		
+		<ol class="comment-list">
+					<!--<li id="comment-72" class="pingback even thread-even depth-1">
+			<div class="comment-body">
+				Pingback: <a href='./how-to-use-test-parameters-automated-ui-testing-with-screenster/' rel='external nofollow' class='url'>How to use parameters in automated UI testing</a> 			</div>-->
+</li><!-- #comment-## -->
+		<!--<li id="comment-130" class="pingback odd alt thread-odd thread-alt depth-1">
+			<div class="comment-body">
+				Pingback: <a href='./regression-testing-tools/' rel='external nofollow' class='url'>9 regression testing tools for web GUI development</a> 			</div>-->
+</li><!-- #comment-## -->
+		<li id="comment-186" class="comment even thread-even depth-1">
+			<article id="div-comment-186" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/984f2660bb133d9beb4763c70b16ee99?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/984f2660bb133d9beb4763c70b16ee99?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">nani</b> <span class="says">on</span>						<time datetime="2018-04-02T11:51:29+00:00">
+							April 2, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>The idea of fully UI-driven end-to-end testing makes sense &#8212; is you can come up with the right test cases that exercise the system outside of the UI.</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-186' onclick='return addComment.moveForm( "div-comment-186", "186", "respond", "1387" )' aria-label='Reply to nani'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-227" class="comment odd alt thread-odd thread-alt depth-1">
+			<article id="div-comment-227" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/0e195464e43f9a854ea2fe93144aa628?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/0e195464e43f9a854ea2fe93144aa628?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">wickedhumor</b> <span class="says">on</span>						<time datetime="2018-04-11T19:59:49+00:00">
+							April 11, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>Your section on what is end-to-end testing mentions  that it tests functionality and performance across all levels and subsystems. How can you do it then with what&#8217;s basically a UI testing tool?</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-227' onclick='return addComment.moveForm( "div-comment-227", "227", "respond", "1387" )' aria-label='Reply to wickedhumor'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-316" class="comment byuser comment-author-ilya-goncharov bypostauthor even thread-even depth-1">
+			<article id="div-comment-316" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/9f935d5dbcc07eb4b1e252b4131f739f?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/9f935d5dbcc07eb4b1e252b4131f739f?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">Ilya Goncharov</b> <span class="says">on</span>						<time datetime="2018-04-16T18:27:09+00:00">
+							April 16, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>I&#8217;d say that much of it depends on how you construct your end-to-end testing cases. A UI-centric test can include a user session that exercises the server side, third-party APIs, random data, etc</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-316' onclick='return addComment.moveForm( "div-comment-316", "316", "respond", "1387" )' aria-label='Reply to Ilya Goncharov'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-507" class="comment odd alt thread-odd thread-alt depth-1">
+			<article id="div-comment-507" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/4128afd6fe6cb66f1707b98484fdf9ce?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/4128afd6fe6cb66f1707b98484fdf9ce?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">lauren phelps</b> <span class="says">on</span>						<time datetime="2018-04-25T19:46:09+00:00">
+							April 25, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>What&#8217;s up with you using Gmail for most of your examples ? (most of the end-to-end testing demos on youtube are with Gmail, for instance)</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-507' onclick='return addComment.moveForm( "div-comment-507", "507", "respond", "1387" )' aria-label='Reply to lauren phelps'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-510" class="comment byuser comment-author-ilya-goncharov bypostauthor even thread-even depth-1">
+			<article id="div-comment-510" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/9f935d5dbcc07eb4b1e252b4131f739f?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/9f935d5dbcc07eb4b1e252b4131f739f?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">Ilya Goncharov</b> <span class="says">on</span>						<time datetime="2018-04-25T20:26:34+00:00">
+							April 25, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>It&#8217;s just a good example. Gmail is a complex web application with lots of things going on under the hood. Besides, Gmail is a web application that most people can access. So, basically, anyone can do the same testing routine and see how Screenster works for them</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-510' onclick='return addComment.moveForm( "div-comment-510", "510", "respond", "1387" )' aria-label='Reply to Ilya Goncharov'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-547" class="comment odd alt thread-odd thread-alt depth-1">
+			<article id="div-comment-547" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/c922d8b24c7b5dfff31ead9d0601002b?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/c922d8b24c7b5dfff31ead9d0601002b?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">alphanumeric</b> <span class="says">on</span>						<time datetime="2018-04-27T11:45:45+00:00">
+							April 27, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>Not sure if I&#8217;m going to want to use your tool for end to end testing, but it looks like a workable solution for UI testing. It works for my website and I&#8217;m curious to see how it&#8217;s going to handle something more complex.</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-547' onclick='return addComment.moveForm( "div-comment-547", "547", "respond", "1387" )' aria-label='Reply to alphanumeric'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-626" class="comment even thread-even depth-1">
+			<article id="div-comment-626" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/2d1fe50044c2f02f9144297b58a9b73d?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/2d1fe50044c2f02f9144297b58a9b73d?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">Coolverine</b> <span class="says">on</span>						<time datetime="2018-05-02T12:52:31+00:00">
+							May 2, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>You&#8217;re defining end to end testing the same way the Protractor website defines it. Were still talking about UI testing here, right?</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-626' onclick='return addComment.moveForm( "div-comment-626", "626", "respond", "1387" )' aria-label='Reply to Coolverine'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-712" class="comment odd alt thread-odd thread-alt depth-1">
+			<article id="div-comment-712" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/9c4b7d008316f29d9d477b61ba6cae73?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/9c4b7d008316f29d9d477b61ba6cae73?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">Speckiboi</b> <span class="says">on</span>						<time datetime="2018-05-07T10:51:04+00:00">
+							May 7, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>Great post but needs a section on end to end testing best practices. Also, would be great to see a comparison on horizontal and vertical end-to-end testing.</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-712' onclick='return addComment.moveForm( "div-comment-712", "712", "respond", "1387" )' aria-label='Reply to Speckiboi'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-766" class="comment even thread-even depth-1">
+			<article id="div-comment-766" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/a77c28fb4f1c34c26b05b99376c986e8?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/a77c28fb4f1c34c26b05b99376c986e8?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">Travis Ford</b> <span class="says">on</span>						<time datetime="2018-05-10T19:36:20+00:00">
+							May 10, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p><b>Horizontal e2e testing</b> (on UI and integration level): login, add to shopping cart, checkout, perform a transaction;<br />
+<b>Vetical e2e testing</b>: automating/running tests across all levels: from Unit, through Integration, to UI.</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-766' onclick='return addComment.moveForm( "div-comment-766", "766", "respond", "1387" )' aria-label='Reply to Travis Ford'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-826" class="comment odd alt thread-odd thread-alt depth-1">
+			<article id="div-comment-826" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/52c64bf5733c487032c53d3fd9786aaa?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/52c64bf5733c487032c53d3fd9786aaa?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">glimmer glitter</b> <span class="says">on</span>						<time datetime="2018-05-15T15:44:55+00:00">
+							May 15, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>Would be awesome to see e2e testing compared to system testing <strong>and</strong> UAT. I know, an experience engineer wouldn&#8217;t really  confuse the three, but then again, an experienced engineer wouldn&#8217;t confuse e2e and system testing. As for beginners, I witnessed quite a few cases when folks were unable to tell the difference</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-826' onclick='return addComment.moveForm( "div-comment-826", "826", "respond", "1387" )' aria-label='Reply to glimmer glitter'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-856" class="comment even thread-even depth-1">
+			<article id="div-comment-856" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/8ecd817f39fddbfbd09cda1136837941?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/8ecd817f39fddbfbd09cda1136837941?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">Vertical Horizon</b> <span class="says">on</span>						<time datetime="2018-05-17T15:19:12+00:00">
+							May 17, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>Looks like a good solution for e2e testing of a feature that&#8217;s already in production</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-856' onclick='return addComment.moveForm( "div-comment-856", "856", "respond", "1387" )' aria-label='Reply to Vertical Horizon'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		<li id="comment-983" class="comment odd alt thread-odd thread-alt depth-1">
+			<article id="div-comment-983" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://secure.gravatar.com/avatar/a1dfad53a882a859a6cc0b32669c42a0?s=42&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/a1dfad53a882a859a6cc0b32669c42a0?s=84&#038;d=mm&#038;r=g 2x' class='avatar avatar-42 photo' height='42' width='42' />						
+						
+					</div><!-- .comment-author -->
+					<div class="comment-metadata">
+					<b class="fn">Telltale Pioneer</b> <span class="says">on</span>						<time datetime="2018-05-22T10:46:17+00:00">
+							May 22, 2018						</time>
+						
+					
+									</div><!-- .comment-metadata -->
+				<div class="comment-content">
+					<p>Interesting approach to end to end automation. Easy to see how this can work</p>
+				</div><!-- .comment-content -->
+					
+
+									</footer><!-- .comment-meta -->
+
+				
+
+				<!-- <div class="reply"><a rel='nofollow' class='comment-reply-link' href='#comment-983' onclick='return addComment.moveForm( "div-comment-983", "983", "respond", "1387" )' aria-label='Reply to Telltale Pioneer'>Reply</a></div> -->
+			</article><!-- .comment-body -->
+</li><!-- #comment-## -->
+		</ol><!-- .comment-list -->
+
+		
+	
+	
+		<div id="respond" class="comment-respond">
+		<h2 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="index.html#respond" style="display:none;">Cancel reply</a></small></h2>			<form action="./wp-comments-post.php" method="post" id="commentform" class="comment-form" novalidate>
+				<p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p><p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" required='required' /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="email" value="" size="30" maxlength="100" aria-describedby="email-notes" required='required' /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="url" value="" size="30" maxlength="200" /></p>
+<p class="comment-form-cookies-consent"><input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes" /><label for="wp-comment-cookies-consent">Save my name, email, and website in this browser for the next time I comment.</label></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='1387' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p>			</form>
+			</div><!-- #respond -->
+	
+</div><!-- .comments-area -->
+			</div>		</div>	</div></div>
+<footer id="footer">
+	<div class="footer-holder">
+		<div class="container clearfix">
+							<section id="nav_menu-2" class="col-md-4 footer-box widget_nav_menu"><h3>Screenster</h3><div class="menu-screenster-menu-container"><ul id="menu-screenster-menu" class="menu"><li id="menu-item-307" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-307"><a href="./documentation/demo-automation-of-gmail-with-screenster/index.html">Documentation</a></li>
+<li id="menu-item-302" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-302"><a href="./documentation/local-installation/index.html">Local Installation</a></li>
+<li id="menu-item-2258" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2258"><a href="./documentation/demo-automation-of-gmail-with-screenster/index.html">Demo: Automation of Gmail with Screenster</a></li>
+<li id="menu-item-2259" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2259"><a href="./documentation/recording-tests/index.html">Recording Tests</a></li>
+<li id="menu-item-2260" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2260"><a href="./documentation/advanced-features/index.html">Advanced Features</a></li>
+<li id="menu-item-57" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-57"><a href="./pricing/index.html">Pricing</a></li>
+<li id="menu-item-56" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-56"><a href="./support/index.html">Support</a></li>
+<li id="menu-item-366" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-366"><a href="./blog/index.html">Blog</a></li>
+<li id="menu-item-367" class="sign-link menu-item menu-item-type-custom menu-item-object-custom menu-item-367"><a href="https://tests.screenster.io">My Tests</a></li>
+</ul></div></section>										<section id="nav_menu-3" class="col-md-4 footer-box widget_nav_menu"><h3>Community</h3><div class="menu-community-menu-container"><ul id="menu-community-menu" class="menu"><li id="menu-item-59" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-59"><a target="_blank" href="https://groups.google.com/forum/#!forum/screenster">Google Group</a></li>
+<li id="menu-item-283" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-283"><a href="https://www.facebook.com/screenster.io">Facebook</a></li>
+<li id="menu-item-284" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-284"><a href="https://twitter.com/screenster_io">Twitter</a></li>
+<li id="menu-item-285" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-285"><a href="https://www.linkedin.com/company/screenster">LinkedIn</a></li>
+<li id="menu-item-286" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-286"><a href="https://plus.google.com/u/0/b/102437454572601473183/102437454572601473183">Google+</a></li>
+<li id="menu-item-1521" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1521"><a href="https://www.youtube.com/channel/UCYAf5YzOoXZr8n7r1TEaHlw">YouTube</a></li>
+</ul></div></section>										<section id="nav_menu-4" class="col-md-4 footer-box widget_nav_menu"><h3>Company</h3><div class="menu-company-menu-container"><ul id="menu-company-menu" class="menu"><li id="menu-item-66" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-66"><a href="./about-us/index.html">About Us</a></li>
+<li id="menu-item-68" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-68"><a href="./privacy-policy/index.html">Privacy Policy</a></li>
+<li id="menu-item-67" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-67"><a href="./license-agreement/index.html">License Agreement</a></li>
+<li id="menu-item-1941" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1941"><a href="./contact-us/index.html">Contact Us</a></li>
+</ul></div></section>					</div>
+	</div>
+	<div class="copyright">
+
+<div class="breadcrumbs" typeof="BreadcrumbList" vocab="http://schema.org/">
+    <!-- Breadcrumb NavXT 6.1.0 -->
+<span property="itemListElement" typeof="ListItem"><a property="item" typeof="WebPage" title="Go to Screenster." href="./index.html" class="home"><span property="name">Screenster</span></a><meta property="position" content="1"></span> &gt; <span property="itemListElement" typeof="ListItem"><a property="item" typeof="WebPage" title="Go to Blog." href="./blog/index.html" class="post-root post post-post"><span property="name">Blog</span></a><meta property="position" content="2"></span> &gt; <span property="itemListElement" typeof="ListItem"><a property="item" typeof="WebPage" title="Go to the testing automation category archives." href="./category/testing-automation/index.html" class="taxonomy category"><span property="name">testing automation</span></a><meta property="position" content="3"></span> &gt; <span property="itemListElement" typeof="ListItem"><span property="name">What is end-to-end testing?</span><meta property="position" content="4"></span></div>
+		<div class="container">
+
+			2018 &copy; <a style="color:#fff;" target="_blank" href="./index.html">Screenster</a>, LLC. All rights reserved.
+
+		</div>
+	</div>
+</footer>
+
+	<div itemscope itemType="http://schema.org/BlogPosting">
+		<meta itemprop="inLanguage" content="en-US"/>
+		<meta itemprop="headline" content="What is end-to-end testing?">
+		<meta itemprop="mainEntityOfPage" content="./end-to-end-testing/"/>
+		<meta itemprop="datePublished" content="2017-10-03">
+		<meta itemprop="dateModified" content="2018-06-08">
+		<meta itemprop="articleBody" content="What is end-to-end testing? End-to-end testing (e2e testing) is a software quality assurance methodology that targets “the flow of an application” functionality- and performance-wise. This methodology checks if an application performs as designed on all levels and across all subsystems. The scope of end-to-end testing encompasses the application in its entirety, as well as its &hellip; Continue reading "What is end-to-end testing?"">
+	  <div itemprop="image" itemscope="" itemtype="https://schema.org/ImageObject"/>
+		<meta itemprop="url" content="./wp-content/uploads/2017/01/end-to-end-testing-300x75.jpg">
+		<meta itemprop="width" content="300">
+		<meta itemprop="height" content="300">
+	  </div>
+	  <div itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+		<meta itemprop="name" content="Ilya Goncharov">
+	  </div>
+	  <div itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+		<meta itemprop="name" content="Screenster">
+		<meta itemprop="url" href=".">
+		<meta itemprop="description" content="Visual UI Testing Automation">
+		<span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+		  <meta itemprop="image" content="">
+		  <meta itemprop="url" content="">
+		  <meta itemprop="width" content="300">
+		  <meta itemprop="height" content="300">
+		</span>
+	</div>
+    
+  <div id="wonderpluginlightbox_options" data-skinsfoldername="skins/default/"  data-jsfolder="./wp-content/plugins/wonderplugin-lightbox/engine/" data-autoslide="false" data-slideinterval="5000" data-showtimer="true" data-timerposition="bottom" data-timerheight="2" data-timercolor="#dc572e" data-timeropacity="1" data-showplaybutton="true" data-alwaysshownavarrows="false" data-bordersize="0" data-showtitleprefix="true" data-responsive="true" data-fullscreenmode="true" data-closeonoverlay="true" data-videohidecontrols="false" data-titlestyle="bottom" data-imagepercentage="100" data-enabletouchswipe="true" data-autoplay="true" data-html5player="true" data-overlaybgcolor="#000" data-overlayopacity="0.8" data-defaultvideovolume="1" data-bgcolor="#000" data-borderradius="0" data-thumbwidth="96" data-thumbheight="72" data-thumbtopmargin="12" data-thumbbottommargin="12" data-barheight="50" data-showtitle="false" data-titleprefix="%NUM / %TOTAL" data-titlebottomcss="color:#333; font-size:14px; font-family:Armata,sans-serif,Arial; overflow:hidden; text-align:left;" data-showdescription="false" data-descriptionbottomcss="color:#333; font-size:12px; font-family:Arial,Helvetica,sans-serif; overflow:hidden; text-align:left; margin:4px 0px 0px; padding: 0px;" data-titleinsidecss="color:#fff; font-size:16px; font-family:Arial,Helvetica,sans-serif; overflow:hidden; text-align:left;" data-descriptioninsidecss="color:#fff; font-size:12px; font-family:Arial,Helvetica,sans-serif; overflow:hidden; text-align:left; margin:4px 0px 0px; padding: 0px;" data-videobgcolor="#000" data-html5videoposter="" data-responsivebarheight="false" data-smallscreenheight="415" data-barheightonsmallheight="48" data-notkeepratioonsmallheight="false" data-wonderplugin-lightbox-options="f305a0a9fd" data-_wp_http_referer="/wp-admin/admin.php?page=wonderplugin_lightbox_show_options" style="display:none;"></div><div class="wonderplugin-engine"><a href="http://www.wonderplugin.com/wordpress-lightbox/" title="WordPress Image Lightbox Plugin">WordPress Image Lightbox Plugin</a></div><link rel='stylesheet' id='rainmaker_form_style-css'  href='./wp-content/plugins/icegram-rainmaker/assets/css/form.css%3Fver=0.33.css' type='text/css' media='all' />
+<script type='text/javascript'>
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/screenster.io\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='./wp-content/plugins/contact-form-7/includes/js/scripts.js%3Fver=5.0.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var leadin_wordpress = {"userRole":"visitor","pageType":"post","leadinPluginVersion":"6.1.5"};
+/* ]]> */
+</script>
+<script type='text/javascript' async defer src='https://js.hs-scripts.com/4371298.js?ver=4.9.6'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var screenReaderText = {"expand":"expand child menu","collapse":"collapse child menu"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='./wp-content/themes/twentysixteen/js/functions.js%3Fver=20151204'></script>
+<script type='text/javascript' src='./wp-includes/js/wp-embed.min.js%3Fver=4.9.6'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var rm_pre_data = {"ajax_url":"https:\/\/screenster.io\/wp-admin\/admin-ajax.php","rm_nonce_field":"8588a73fa9"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='./wp-content/plugins/icegram-rainmaker/assets/js/main.js%3Fver=0.33'></script>
+
+</body>
+</html>

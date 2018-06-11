@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns   = "http://www.w3.org/ns/widgets"
+    xmlns:gap   = "http://phonegap.com/ns/1.0"
+    id          = "com.end2end.screenster"
+    versionCode = "10"
+    version     = "1.0.0" >
+
+<!-- versionCode is optional and Android only -->
+
+  <name>end-to-end-testing</name>
+
+  <description>
+End-to-end testing (e2e testing) is a software quality assurance methodology that targets “the flow of an application” functionality- and performance-wise. This methodology checks if an application performs as designed on all levels and across all subsystems.
+  </description>
+
+  <author href="https://screenster.io"  >
+      Screenster
+  </author>
+
+</widget>
